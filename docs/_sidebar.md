@@ -3,4 +3,4 @@
 
 
 * Announce
-    * [media](docs/md/media.md)
+    * [media](md/media.md)
