@@ -2,6 +2,7 @@
 
 > As the only circulating token on the Forest Network, it will realize circulation at the incentive layer and application level, and build an economic ecology.
 
+
 When decentralized open services are replacing the centralized
 services used by the event, elastic IP addresses are replacing IP
 addresses with low security, and peer-to-peer decentralized algorithm
@@ -22,7 +23,6 @@ certain amount of gas. Each node of the Forest Network can be
 regarded as a "Contributor to the Forest Network System" (hereinafter
 referred to as "Contributor"). While providing computing and storage
 services, block information on each node is packed, witnessed, and
-- 2 -
 recorded to obtain rewards from the Forest Network. Besides, Forest
 Labs also created a "Forest Network Random Consensus Law" to
 provide better privacy security protection for those who used Forest
@@ -34,4 +34,4 @@ provide computing power and storage support for the entire network, realize inte
 through encryption algorithms. In this way, the network will receive a
 huge amount of computing power and storage, and contributors can
 get paid. Whenever we want, we can obtain any unit-level privacy
-computing power and storage space through this network.
+computing power and storage space through this network
