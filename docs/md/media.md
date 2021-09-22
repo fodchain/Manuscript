@@ -99,7 +99,7 @@
 * [大侠区块链](https://www.bitcoin.xn--6qq986b3xl/?mod=flash&act=flashDetails&id=161381)
 * [原力财经](http://www.yuanli24.com/live/32929)
 * [及时财经](http://www.jishi.cool/kuaixun/3088.html)
-* [出处: 链叨叨](http://www.liandaodao.cn/forum.php?mod=viewthread&tid=68355)
+* [链叨叨](http://www.liandaodao.cn/forum.php?mod=viewthread&tid=68355)
 * [自链财经](https://www.zilian8.com/?p=844905)
 * [链云财经](http://www.lianwin8.com/?wire=2-21)
 * [链都财经](http://www.liandu24.com/kuaixun/6515.html)
