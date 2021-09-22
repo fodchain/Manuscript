@@ -103,8 +103,8 @@
 * [自链财经](https://www.zilian8.com/?p=844905)
 * [链云财经](http://www.lianwin8.com/?wire=2-21)
 * [链都财经](http://www.liandu24.com/kuaixun/6515.html)
-* [链启](http://www.chainon.pro/live/33545）
-* [白鹭财经](http://www.bailucj.com/live/87479）
+* [链启](http://www.chainon.pro/live/33545)
+* [白鹭财经](http://www.bailucj.com/live/87479)
 
 
 
