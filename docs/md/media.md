@@ -94,7 +94,7 @@
 * [区块智讯](http://www.blockwisdoms.com/kuaixun/1158.html)
 * [DeFi Clubhttps](https://www.deficlub.io/kuaixun/16172.html)
 * [Coinrado资讯](http://www.leidcj.com/live/29465)
-* [CoinONhttps](https://www.coinonvip.com/flash/4755.html)
+* [CoinON](https://www.coinonvip.com/flash/4755.html)
 * [链掌柜](http://lianzhanggui.com/kuaixun/2021/0920/2947.html)
 * [大侠区块链](https://www.bitcoin.xn--6qq986b3xl/?mod=flash&act=flashDetails&id=161381)
 * [原力财经](http://www.yuanli24.com/live/32929)
