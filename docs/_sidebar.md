@@ -3,6 +3,8 @@
 
 * F-node construction
     * [Before starting](md/fnode/starting.md)
+    * [Node start](md/fnode/nodestart.md)
+    * [Register as an F node](md/fnode/Register.md)
 
 * Announce
     * [media](md/media.md)
