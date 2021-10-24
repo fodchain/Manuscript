@@ -2,7 +2,7 @@
 
 
 
-**Preparation before opening **
+**Preparation before opening**
 
 - **Configuration meets the conditions**
 
