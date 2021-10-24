@@ -3,7 +3,7 @@
 
 - **Configuration meets the conditions**
 
-
+  |        NAME      | amount   |
   | :--------------- | -------: |
   | **CPU**          |   8 core |
   | **Memory space** |    64 GB |
