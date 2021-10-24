@@ -1,8 +1,5 @@
-### Forest Network F Node Deployment Guide
+#### Preparation before opening
 
-
-
-**Preparation before opening**
 
 - **Configuration meets the conditions**
 
