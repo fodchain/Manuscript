@@ -2,7 +2,7 @@
 
 
 
-**VFri 26 Nov 2021 01:20:17 AM UTC**
+**VFri 26 Nov 2021**
 
 The forest network was updated yesterday, and you need to modify it on your F node Server.
 
