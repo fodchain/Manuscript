@@ -8,5 +8,9 @@
 
 * T-node construction
     * [Construction](md/tnode/establish.md)
+
+* Update log
+    * [Operation and log after update](md/update/operate_and.md)
+docs/
 * Announce
     * [media](md/media.md)
