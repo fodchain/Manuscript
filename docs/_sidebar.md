@@ -12,5 +12,9 @@
 * Update log
     * [Operation and log after update](md/update/operate_and.md)
 
+* Vote
+    * [Election to F NODE](md/vote.md)
+
+
 * Announce
     * [media](md/media.md)
