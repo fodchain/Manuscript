@@ -329,7 +329,7 @@ elif [[  $1 = 'mining'  ]];then
               $register
 	      >$FOREST/.mining/register
               echo -e "------+"
-              echo -e "Registration is complete ！"
+              echo -e "If you need to re-register, please rm -rf /root/.forest/.mining/register"
         elif [[  $2 = 'pledge'  ]];then
               if [ ! -d  "$FOREST/.mining" ];then
                   $(cat $FOREST/.mining/.createKey|grep address|awk '{print $3}'|cut -c2-44)
@@ -369,9 +369,10 @@ elif [[  $1 = 'mining'  ]];then
 
 
               pledge=${GUIDE}" push action galaxy.sys delegatebw '{\"account\":\"${address}\",\"binder\":\"${address}\",\"amount\":\"3000.000000 FOD\",\"height\":\"1400\"}' -p ${address}@active"
-              $pledge >$FOREST/.mining/pledge
+              $pledge 
+	      >$FOREST/.mining/pledge
               echo -e "------+"
-              echo -e "Pledge completed ！"
+              echo -e "If you need to pledge again, please rm -rf /root/.forest/.mining/pledge"
 
          else
          echo "
