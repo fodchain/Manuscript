@@ -17,7 +17,7 @@ galaxy_package=
 # param.ini file path
 galaxy_dir=
 # Number of nodes, you can view it on your browser. We will remove this configuration later
-node_num=
+node_num=2
 # Write the public key address of the genesis node here
 # You can find it here: https://forestscan.io/en/account/detail?account=galaxy
 pubkey_1=
@@ -27,9 +27,9 @@ pubkey_1=
 # pubkey_3=
 # prikey_3=
 # You can use createKey.jar to create it
-producer ?=
-pubkey_?=
-prikey_?=
+producer2=
+pubkey_2=
+prikey_2=
 # Process function grouping, divide the process into different groups
 # Under normal circumstances, you don’t need to change it
 pid_group1=nodgal_trx:nodgal_ca:nodgal_shell:iceregistry
@@ -45,8 +45,8 @@ node1_report1=6100
 node1_report2=6101
 
 #Process group ip address
-node1_group1=51.77.85.44
-node2_group1=92.223.80.79
+node1_group1=18.181.123.111
+node2_group1=Local public network address
 
 #ice External port
 ice_port=5247
