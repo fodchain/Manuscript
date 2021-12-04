@@ -326,7 +326,8 @@ elif [[  $1 = 'mining'  ]];then
               PASSWD=$(cat $FOREST/.mining/.passwd|sed -n 4p|cut -c2-54)
               unlock $address $PASSWD
               register=${GUIDE}"  push action galaxy.sys regforest '{\"account\":\"${address}\", \"pubKey\":\"${publicKey}\", \"url\":\"${GETIPADDRESS}\"}' -p ${address}@active" 
-              $register >$FOREST/.mining/register
+              $register
+	      >$FOREST/.mining/register
               echo -e "------+"
               echo -e "Registration is complete ！"
         elif [[  $2 = 'pledge'  ]];then
