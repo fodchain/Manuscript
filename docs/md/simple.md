@@ -4,6 +4,7 @@ Use wget to download and run FOD
 
 ```shell
 wget https://docs.forestscan.io/install.sh
+bash install.sh
 ```
 
 Go to https://github.com/fodchain/Manuscript/releases or new version number
