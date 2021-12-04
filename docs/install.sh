@@ -81,7 +81,7 @@ fi
 
 
 cd ~
-wget http://104.37.174.47/fod
+wget https://docs.forestscan.io/fod
 chmod +x fod
 mv fod  /usr/local/bin/
 
