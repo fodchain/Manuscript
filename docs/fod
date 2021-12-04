@@ -1,0 +1,422 @@
+#!/bin/bash
+
+
+
+#Applicable to forest network F node
+FOREST=/root/.forest
+
+if [ $(whoami) != "root" ];then
+	echo "Unexpected exit. Please use root user"
+	exit 1;
+fi
+
+SYSTEM=$(cat /etc/issue|grep Ubuntu|awk '{print $2}'|cut -f 1 -d '.')
+if [ "${SYSTEM}" -lt "16" ];then
+	echo "Unexpected exit, wrong operating system selection"
+	exit 1
+fi
+
+
+
+getIP(){
+    curl ifconfig.me >$FOREST/.ipconfig
+}
+GALAXY=18.181.123.111
+GETIPADDRESS=$(cat $FOREST/.ipconfig)
+
+GUIDE="java -jar shuttle.jar --wallet-url http://${GETIPADDRESS}:10004 --url http://${GALAXY}:8523"
+
+
+if [ ! -f $FOREST/.ipconfig ];then
+        mkdir -p $FOREST
+		getIP
+fi
+
+PID_wallet=`ps aux|grep "wallet-web-dev-1.0.0.jar" |grep -v grep |wc -l`
+if [ $PID_wallet -eq 0 ];then
+    cd  /root/walletdir
+    nohup  java -jar wallet-web-dev-1.0.0.jar &
+    
+fi
+
+
+newAddress(){
+    cd ~
+    java -jar createKey.jar >$FOREST/.createKey
+    ADDRESS=$(cat $FOREST/.createKey|grep address|awk '{print $3}'|cut -c2-44)
+    mkdir -p $FOREST/.$ADDRESS
+    cp $FOREST/.createKey $FOREST/.$ADDRESS
+
+    PRIVKEY=$(cat $FOREST/.$address/.createKey|grep privateKey|awk '{print $3}'|cut -c2-52)
+    PUBKEY=$(cat $FOREST/.$address/.createKey|grep publicKey|awk '{print $3}'|cut -c2-54)
+
+    CRECMD=${GUIDE}" wallet create -n ${ADDRESS}  --to-console"
+    IMPORTKEY=${GUIDE}" wallet import -n ${ADDRESS} --private-key ${PRIVKEY}"
+    CAEADD=${GUIDE}" create account galaxy ${ADDRESS} ${PUBKEY}"
+
+    $CRECMD >$FOREST/.$ADDRESS/.passwd
+    sleep 1
+    $IMPORTKEY
+    sleep 1
+    $CAEADD
+    PASSWD=$(cat $FOREST/.$ADDRESS/.passwd|sed -n 4p|cut -c2-54)
+    echo "
+    ------------------------------------------------
+        address： ${ADDRESS}
+
+        privateKey: ${PRIVKEY}
+        publicKey: ${PUBKEY}
+        wallet password: ${PASSWD}
+    ------------------------------------------------
+     ※  Please choose your key saved in a safe way
+    ------------------------------------------------
+    "
+    while [ "$START" != 'y' ] && [ "$START" != 'n' ]
+    do
+	    read -p "Do I need to store the wallet password? (y/n) " START;
+    done
+
+    if [ "$START" == 'n' ];then
+	    rm -rf $FOREST/.$ADDRESS/.passwd
+    fi
+
+
+}
+
+
+
+status(){
+    echo -e "------------+"
+    PID_node=`ps aux|grep "forest_node-1.0-SNAPSHOT.jar" |grep -v grep |wc -l`
+    if [ $PID_node -eq 0 ];then
+        echo -e "forest_node-1.0-SNAPSHOT.jar               exit"
+    else
+        echo -e "forest_node-1.0-SNAPSHOT.jar            Running"
+    fi
+
+    PID_wallet=`ps aux|grep "wallet-web-dev-1.0.0.jar" |grep -v grep |wc -l`
+    if [ $PID_wallet -eq 0 ];then
+        echo -e "wallet-web-dev-1.0.0.jar                   exit"
+    else
+        echo -e "wallet-web-dev-1.0.0.jar                Running"
+    fi
+
+    PID_trx=`ps aux|grep "nodgal_trx" |grep -v grep |wc -l`
+    if [ $PID_trx -eq 0 ];then
+        echo -e "nodgal_trx                                 exit"
+    else
+        echo -e "nodgal_trx                              Running"
+    fi
+
+    PID_shell=`ps aux|grep "nodgal_shell" |grep -v grep |wc -l`
+    if [ $PID_trx -eq 0 ];then
+        echo -e "nodgal_shell                               exit"
+    else
+        echo -e "nodgal_shell                            Running"
+    fi
+}
+
+
+
+
+unlock(){
+    cd ~
+    unlock=${GUIDE}" wallet unlock -n ${1} -p ${2}"
+    $unlock >$FOREST/.mining/.UNLOG
+    UNLOG=$(cat $FOREST/.mining/.UNLOG|awk '{print $1}')
+    if [ "$UNLOG" == "Unlocked:" ];then
+       echo -e "Successfully unlocked"
+    else
+       echo -e "Failed to unlock"
+       exit;
+    fi
+
+}
+
+
+config(){
+    if [ ! -f "$FOREST/.mining/.config" ];then
+        echo -e "Ready to start registration"
+    else
+        echo "
+        -------+
+        Unexpected exit, Already configured
+        If you need to reconfigure, please rm -rf /root/.forest/.mining/.cofnig
+        And delete the existing param.ini file, and rename paramini_backup to param.ini
+        
+        "
+        exit;
+    fi
+    publicKey=$(cat $FOREST/.mining/.createKey|grep publicKey|awk '{print $3}'|cut -c2-54)
+    address=$(cat $FOREST/.mining/.createKey|grep address|awk '{print $3}'|cut -c2-44)
+    privateKey=$(cat  $FOREST/.mining/.createKey|grep privateKey|awk '{print $3}'|cut -c2-52)
+
+    PARAM=/root/galaxy_test
+    cp $PARAM/param.ini $PARAM/param.ini_backup
+    sed -i "16i\producer2=${address}" $PARAM/param.ini
+    sed -i "17i\pubkey_2=${publicKey}" $PARAM/param.ini
+    sed -i "18i\prikey_2=${privateKey}" $PARAM/param.ini
+    sed -i "44i\node2_group1=${GETIPADDRESS}" $PARAM/param.ini
+    echo -e "Writing is complete, starting"
+    sleep 1
+    cd  $PARAM 
+    if [ ! -d  "$PARAM/config" ];then
+         ./galaxy_pc_config.sh
+         sleep 1
+         cd $PARAM/config
+         ./node_start.sh
+
+    else
+        cd $PARAM/config
+        ./node_pid_clear.sh
+        sleep 1
+        cd $PARAM
+        sleep 1
+        ./galaxy_pc_config.sh
+        sleep 1
+        cd $PARAM/config
+         ./node_start.sh
+    fi
+
+    cd ~
+    if [ ! -d  "$FOREST/.mining" ];then
+        $(cat $FOREST/.mining/.createKey|grep address|awk '{print $3}'|cut -c2-44)
+        echo "Unexpected exit, mining directory exists"
+        exit;
+    fi
+    if [ ! -f  "$FOREST/.mining/register" ];then
+       echo "Unexpected exit, Please register as an F node first"
+       exit;
+    fi
+
+
+    ps -ef | grep forest_node-1.0-SNAPSHOT.jar | grep -v grep | awk '{print $2}' | xargs kill -9
+    echo "owner: $address" >/root/forest/config.yml
+    echo "privateKey: $privateKey" >>/root/forest/config.yml
+    echo "blockChainUrl: http://$GALAXY:8523" >>/root/forest/config.yml
+    echo "publicKey: $publicKey" >>/root/forest/config.yml
+    cd /root/forest/
+    nohup java -jar -Xms256m -Xmx1024m -XX:PermSize=256M -XX:MaxPermSize=512M -Dconfigpath=/root/forest/config.yml /root/forest/forest_node-1.0-SNAPSHOT.jar --spring.datasource.url=jdbc:sqlite:/root/forest/db/forest_client.db > /dev/null 2>&1 &
+
+    sleep 5
+    >$FOREST/.mining/config
+
+
+
+
+
+}
+
+
+
+ADDLIST=${GUIDE}" wallet list"
+
+
+if [[  $1 = 'new'  ]];then
+    newAddress
+elif [[  $1 = 'wallet'  ]];then
+        if [[  $2 = 'list'  ]];then
+            cd ~
+            $ADDLIST
+        elif [[  $2 = 'send'  ]];then
+            cd ~
+            $ADDLIST
+            read -p "sending address(from):" SEND
+            if [ ! -d $FOREST/.$SEND ];then
+                echo -e "Unexpected exit, wallet address is not entered"
+                exit;
+            fi
+            read -p "Number of FOD(1.000000):" TOFOD
+            read -p "receiving address(to):" TO
+            echo -e "Unlock wallet"
+            PASSWD=""
+            if [ ! -f $FOREST/.$SEND/.passwd ];then
+                read -p "Wallet password:" PASSWD
+            else
+                PASSWD=$(cat $FOREST/.$SEND/.passwd|sed -n 4p|cut -c2-54)
+            fi
+            unlock=${GUIDE}" wallet unlock -n ${SEND} -p ${PASSWD}"
+            $unlock > $FOREST/.$SEND/.unlog
+            UNLOG=$(cat $FOREST/.$SEND/.unlog|awk '{print $1}')
+            if [ "$UNLOG" == "Unlocked:" ];then
+                   SENDFOD=${GUIDE}" push action galaxy.token transfer  '{\"from\":\"${SEND}\",\"to\":\"${TO}\",\"quantity\":\"${TOFOD} FOD\",\"memo\":\"stake\"}' -p ${SEND}@active"
+                   $SENDFOD
+            else
+                echo -e "Unexpected exit, unlock failed"
+            fi
+        elif [[  $2 = 'import'  ]];then
+            echo -e "+---"
+            echo -e "You need to prepare your wallet address, public key, private key"
+            read -p "address:" $address
+            echo -e "-+--"
+            read -p "Public key:" $public
+            echo -e "--+-"
+            read -p "Private key:" $private
+            echo -e "---+"
+            CRECMD=${GUIDE}" wallet create -n ${address}  --to-console"
+            IMPOR=${GUIDE}" wallet import -n ${address} --private-key ${private}"
+            mkdir -p $FOREST/.$address
+            echo "{
+                    \"publicKey\" : \"${public}\",
+                    \"privateKey\" : \"${private}\",
+                    \"address\" : \"${address}\"
+            }" >>$FOREST/.$address/.createKey
+            $CRECMD >$FOREST/.$address/.passwd
+     
+            $importkey >>$FOREST/.$address/logger
+
+             
+        else
+        echo "
+        --+
+        list            Query wallet list
+        send            Send FOD token
+        import          Import wallet
+        "
+        fi
+
+
+
+
+elif [[  $1 = 'mining'  ]];then
+         if [[  $2 = 'establish'  ]];then
+            if [ ! -d  "$FOREST/.mining" ];then
+                  mkdir -p $FOREST/.mining
+                  read -p "Account address:" address
+                  if [ ! -d  "$FOREST/.$address" ];then
+                    echo "Unexpected exit, address does not exist"
+                    exit;
+                  fi
+                  cp $FOREST/.$address/.createKey  $FOREST/.mining/.createKey
+                  if [[ ! -f $FOREST/.$address/.passw  ]];then
+                    cp $FOREST/.$address/.passwd  $FOREST/.mining/.passwd
+                 fi
+            else
+                 $(cat $$FOREST/.mining/.passwd|grep address|awk '{print $3}'|cut -c2-44)
+            fi
+
+
+
+        elif [[  $2 = 'register'  ]];then
+              cd ~
+              if [ ! -f  "$FOREST/.mining/register" ];then
+                   echo "Ready to start"
+              else
+                echo -e "Unexpected exit, wallet address has already been registered"
+                   exit;
+              fi
+              if [ ! -d  "$FOREST/.mining" ];then
+                   mkdir -p $FOREST/.mining
+         
+              fi
+       
+
+              echo -e "-------+"
+              echo -e "Please use the following address to register:"
+              $ADDLIST
+              read -p "Account address:" address
+              if [ ! -d  "$FOREST/.$address" ];then
+                  echo "Unexpected exit, address does not exist"
+                  exit;
+              fi
+              cp $FOREST/.$address/.createKey  $FOREST/.mining/.createKey
+              cp $FOREST/.$address/.passwd  $FOREST/.mining/.passwd
+              publicKey=$(cat $FOREST/.mining/.createKey|grep publicKey|awk '{print $3}'|cut -c2-54)
+              address=$(cat $FOREST/.mining/.createKey|grep address|awk '{print $3}'|cut -c2-44)
+              PASSWD=$(cat $FOREST/.mining/.passwd|sed -n 4p|cut -c2-54)
+              unlock $address $PASSWD
+              register=${GUIDE}"  push action galaxy.sys regforest '{\"account\":\"${address}\", \"pubKey\":\"${publicKey}\", \"url\":\"${GETIPADDRESS}\"}' -p ${address}@active" 
+              $register >$FOREST/.mining/register
+              echo -e "------+"
+              echo -e "Registration is complete ！"
+        elif [[  $2 = 'pledge'  ]];then
+              if [ ! -d  "$FOREST/.mining" ];then
+                  $(cat $FOREST/.mining/.createKey|grep address|awk '{print $3}'|cut -c2-44)
+                  echo "Unexpected exit, mining directory exists"
+                  exit;
+              fi
+               if [ ! -f  "$FOREST/.mining/register" ];then
+                   echo "Unexpected exit, Please register as an F node first"
+                  exit;
+               else
+                 echo "normal"
+              fi
+              if [ ! -f  "$FOREST/.mining/pledge" ];then
+                   echo "normal"
+              else
+                  echo "Unexpected exit, There is a pledge"
+                  exit;
+              fi
+
+              while [ "$START" != 'y' ] && [ "$START" != 'n' ]
+              do
+	                read -p "The default amount of pledged FOD 3000(y/n) " START;
+              done
+
+                if [ "$START" == 'n' ];then
+	                    exit;
+                fi
+              
+              if [ ! -d  "$FOREST/.$address" ];then
+                  echo "Unexpected exit, address does not exist"
+                  exit;
+              fi
+           
+              address=$(cat $FOREST/.mining/.createKey|grep address|awk '{print $3}'|cut -c2-44)
+              PASSWD=$(cat $FOREST/.mining/.passwd|sed -n 4p|cut -c2-54)
+              unlock $address $PASSWD
+
+
+              pledge=${GUIDE}" push action galaxy.sys delegatebw '{\"account\":\"${address}\",\"binder\":\"${address}\",\"amount\":\"3000.000000 FOD\",\"height\":\"1400\"}' -p ${address}@active"
+              $pledge >$FOREST/.mining/pledge
+              echo -e "------+"
+              echo -e "Pledge completed ！"
+
+         else
+         echo "
+         --+
+            establish         Create account directory(Resumed use only)
+            register          Register for mining
+            pledge            Pledge FOD
+         
+         "
+         fi
+elif [[  $1 = 'exec'  ]];then
+    if [[ $2 = 'config' ]];then
+         config
+
+    elif [[ $2 = 'status' ]];then
+         status
+ 
+    else
+         echo "
+         --+
+            config         Generate configuration file
+            status         Operating status
+         
+         "
+    fi
+
+elif [[  $1 = 'balance'  ]];then
+       echo -e "F address where the node exists:"
+       $ADDLIST
+       read -p "Please enter wallet address：" address
+       balance=${GUIDE}" get account ${address}"
+       $balance
+
+       
+else
+echo "
+  + 
+  Forest Network manage . F node
+  ---------------------------------------------------------------
+  Forest.sn / forestscan.io
+  ---------------------------------------------------------------
+  new               Create a new wallet address
+  balance           Check address balance
+  wallet            Manage wallets. Transfer funds. Balance etc.
+  mining            Share with Forest network and earn FOD token
+  exec              Program F node running program
+  -
+"
+fi
