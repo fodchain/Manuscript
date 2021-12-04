@@ -184,10 +184,7 @@ config(){
         echo "Unexpected exit, mining directory exists"
         exit;
     fi
-    if [ ! -f  "$FOREST/.mining/register" ];then
-       echo "Unexpected exit, Please register as an F node first"
-       exit;
-    fi
+
 
 
     ps -ef | grep forest_node-1.0-SNAPSHOT.jar | grep -v grep | awk '{print $2}' | xargs kill -9
@@ -247,11 +244,11 @@ elif [[  $1 = 'wallet'  ]];then
         elif [[  $2 = 'import'  ]];then
             echo -e "+---"
             echo -e "You need to prepare your wallet address, public key, private key"
-            read -p "address:" $address
+            read -p "address:" address
             echo -e "-+--"
-            read -p "Public key:" $public
+            read -p "Public key:" public
             echo -e "--+-"
-            read -p "Private key:" $private
+            read -p "Private key:" private
             echo -e "---+"
             CRECMD=${GUIDE}" wallet create -n ${address}  --to-console"
             IMPOR=${GUIDE}" wallet import -n ${address} --private-key ${private}"
@@ -260,7 +257,7 @@ elif [[  $1 = 'wallet'  ]];then
                     \"publicKey\" : \"${public}\",
                     \"privateKey\" : \"${private}\",
                     \"address\" : \"${address}\"
-            }" >>$FOREST/.$address/.createKey
+            }" >$FOREST/.$address/.createKey
             $CRECMD >$FOREST/.$address/.passwd
      
             $importkey >>$FOREST/.$address/logger
