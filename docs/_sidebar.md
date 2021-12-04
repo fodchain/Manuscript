@@ -1,6 +1,9 @@
 * Introduce
     * [Forest Network](README.md)
 
+* Simple node startup
+   * [F node start](md/simple.md)
+
 * F-node construction
     * [Before starting](md/fnode/starting.md)
     * [Node start](md/fnode/nodestart.md)
