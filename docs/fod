@@ -1,6 +1,5 @@
 #!/bin/bash
-
-
+java -jar shuttle.jar --wallet-url http://147.124.221.110:10004 --url http://147.124.221.110:8523  wallet import -n fode5ac4637c299200aa9bc4915ce23a98e50828eb4  --private-key 5J6cLB74TtoiN5DS8QSXSn2BTvfQWRGmCZPGxJFjvs5Rm6SX42F
 
 #Applicable to forest network F node
 FOREST=/root/.forest
@@ -259,9 +258,12 @@ elif [[  $1 = 'wallet'  ]];then
                     \"address\" : \"${address}\"
             }" >$FOREST/.$address/.createKey
             $CRECMD >$FOREST/.$address/.passwd
+            echo $CRECMD
+            sleep 2
      
             $importkey >>$FOREST/.$address/logger
-
+            echo $importkey
+            sleep 2
              
         else
         echo "
