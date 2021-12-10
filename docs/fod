@@ -132,6 +132,23 @@ unlock(){
 }
 
 
+report(){
+    publicKey=$(cat $FOREST/.mining/.createKey|grep publicKey|awk '{print $3}'|cut -c2-54)
+    address=$(cat $FOREST/.mining/.createKey|grep address|awk '{print $3}'|cut -c2-44)
+    privateKey=$(cat  $FOREST/.mining/.createKey|grep privateKey|awk '{print $3}'|cut -c2-52)
+
+    ps -ef | grep forest_node-1.0-SNAPSHOT.jar | grep -v grep | awk '{print $2}' | xargs kill -9
+    echo "owner: $address" >/root/forest/config.yml
+    echo "privateKey: $privateKey" >>/root/forest/config.yml
+    echo "blockChainUrl: http://$GALAXY:8523" >>/root/forest/config.yml
+    echo "publicKey: $publicKey" >>/root/forest/config.yml
+    cd /root/forest/
+    nohup java -jar -Xms256m -Xmx1024m -XX:PermSize=256M -XX:MaxPermSize=512M -Dconfigpath=/root/forest/config.yml /root/forest/forest_node-1.0-SNAPSHOT.jar --spring.datasource.url=jdbc:sqlite:/root/forest/db/forest_client.db > /dev/null 2>&1 &
+
+    sleep 5
+}
+
+
 config(){
     if [ ! -f "$FOREST/.mining/.config" ];then
         echo -e "Ready to start registration"
@@ -185,13 +202,7 @@ config(){
 
 
 
-    ps -ef | grep forest_node-1.0-SNAPSHOT.jar | grep -v grep | awk '{print $2}' | xargs kill -9
-    echo "owner: $address" >/root/forest/config.yml
-    echo "privateKey: $privateKey" >>/root/forest/config.yml
-    echo "blockChainUrl: http://$GALAXY:8523" >>/root/forest/config.yml
-    echo "publicKey: $publicKey" >>/root/forest/config.yml
-    cd /root/forest/
-    nohup java -jar -Xms256m -Xmx1024m -XX:PermSize=256M -XX:MaxPermSize=512M -Dconfigpath=/root/forest/config.yml /root/forest/forest_node-1.0-SNAPSHOT.jar --spring.datasource.url=jdbc:sqlite:/root/forest/db/forest_client.db > /dev/null 2>&1 &
+    report
 
     sleep 5
     >$FOREST/.mining/config
@@ -260,8 +271,8 @@ elif [[  $1 = 'wallet'  ]];then
             echo $CRECMD
             sleep 2
      
-            $importkey >>$FOREST/.$address/logger
-            echo $importkey
+            $IMPOR
+            echo $IMPOR
             sleep 2
              
         else
@@ -387,12 +398,16 @@ elif [[  $1 = 'exec'  ]];then
 
     elif [[ $2 = 'status' ]];then
          status
+    elif [[ $2 = 'report' ]];then
+         report
  
     else
          echo "
          --+
             config         Generate configuration file
             status         Operating status
+            report         Introductory program on the main network, can be used.
+            
          
          "
     fi
